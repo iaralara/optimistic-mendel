@@ -1,5 +1,2 @@
 streamlit
-google-generativeai
-python-dotenv
-playwright
-Pillow
+pandas
