@@ -2,8 +2,25 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Terminal, Code, MessageSquare, FolderTree, Play, CheckCircle, AlertTriangle, FileText } from 'lucide-react';
+import { Terminal, Code, MessageSquare, FolderTree, Play, CheckCircle, AlertTriangle, FileText, Wrench, Wallet, PlusCircle, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+
+// --- Tipos ---
+interface ManutencaoCard {
+  id: number;
+  titulo: string;
+  data: string;
+  status: 'pendente' | 'em_andamento' | 'concluido';
+  responsavel: string;
+}
+
+interface Movimentacao {
+  id: number;
+  descricao: string;
+  tipo: 'entrada' | 'saida';
+  valor: number;
+  data: string;
+}
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('chat');
@@ -17,6 +34,23 @@ export default function Home() {
   const [specData, setSpecData] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+  // --- Estado: Manutenções ---
+  const [manutencoes, setManutencoes] = useState<ManutencaoCard[]>([
+    { id: 1, titulo: 'Revisão do Servidor Principal', data: '2026-09-10', status: 'concluido', responsavel: 'Carlos Silva' },
+    { id: 2, titulo: 'Troca de HD - Máquina 03', data: '2026-09-15', status: 'em_andamento', responsavel: 'Ana Souza' },
+    { id: 3, titulo: 'Atualização de Firmware - Roteador', data: '2026-09-20', status: 'pendente', responsavel: 'Roberto Lima' },
+  ]);
+  const [novaManutencao, setNovaManutencao] = useState({ titulo: '', data: '', responsavel: '' });
+
+  // --- Estado: Fundo de Caixa ---
+  const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([
+    { id: 1, descricao: 'Saldo inicial', tipo: 'entrada', valor: 500.00, data: '2026-09-01' },
+    { id: 2, descricao: 'Material de escritório', tipo: 'saida', valor: 45.90, data: '2026-09-05' },
+    { id: 3, descricao: 'Reposição de caixa', tipo: 'entrada', valor: 200.00, data: '2026-09-10' },
+    { id: 4, descricao: 'Correios - envio', tipo: 'saida', valor: 28.50, data: '2026-09-12' },
+  ]);
+  const [novaMovimentacao, setNovaMovimentacao] = useState({ descricao: '', tipo: 'entrada' as 'entrada' | 'saida', valor: '', data: '' });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -153,6 +187,40 @@ export default function Home() {
       }
   };
 
+  // --- Handlers: Manutenções ---
+  const handleAdicionarManutencao = () => {
+    if (!novaManutencao.titulo || !novaManutencao.data || !novaManutencao.responsavel) return;
+    setManutencoes(prev => [...prev, { id: Date.now(), ...novaManutencao, status: 'pendente' }]);
+    setNovaManutencao({ titulo: '', data: '', responsavel: '' });
+  };
+
+  const handleRemoverManutencao = (id: number) => {
+    setManutencoes(prev => prev.filter(m => m.id !== id));
+  };
+
+  const handleAlterarStatusManutencao = (id: number) => {
+    setManutencoes(prev => prev.map(m => {
+      if (m.id !== id) return m;
+      const proximo: Record<string, ManutencaoCard['status']> = { pendente: 'em_andamento', em_andamento: 'concluido', concluido: 'pendente' };
+      return { ...m, status: proximo[m.status] };
+    }));
+  };
+
+  // --- Handlers: Fundo de Caixa ---
+  const handleAdicionarMovimentacao = () => {
+    if (!novaMovimentacao.descricao || !novaMovimentacao.valor || !novaMovimentacao.data) return;
+    setMovimentacoes(prev => [...prev, { id: Date.now(), ...novaMovimentacao, valor: parseFloat(novaMovimentacao.valor) }]);
+    setNovaMovimentacao({ descricao: '', tipo: 'entrada', valor: '', data: '' });
+  };
+
+  const handleRemoverMovimentacao = (id: number) => {
+    setMovimentacoes(prev => prev.filter(m => m.id !== id));
+  };
+
+  const saldoAtual = movimentacoes.reduce((acc, m) => m.tipo === 'entrada' ? acc + m.valor : acc - m.valor, 0);
+  const totalEntradas = movimentacoes.filter(m => m.tipo === 'entrada').reduce((acc, m) => acc + m.valor, 0);
+  const totalSaidas = movimentacoes.filter(m => m.tipo === 'saida').reduce((acc, m) => acc + m.valor, 0);
+
   return (
     <div className="flex flex-col h-screen bg-[#0f111a] text-slate-300 font-sans">
       {/* HEADER */}
@@ -181,6 +249,17 @@ export default function Home() {
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'terminal' ? 'bg-[#1e2335] text-cyan-400' : 'hover:bg-[#1e2335] text-slate-400'}`}>
             <Terminal size={16} /> Terminal
           </button>
+          <button
+            onClick={() => setActiveTab('manutencoes')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'manutencoes' ? 'bg-[#1e2335] text-amber-400' : 'hover:bg-[#1e2335] text-slate-400'}`}>
+            <Wrench size={16} /> Manutenções
+          </button>
+          <button
+            onClick={() => setActiveTab('fundo_caixa')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'fundo_caixa' ? 'bg-[#1e2335] text-emerald-400' : 'hover:bg-[#1e2335] text-slate-400'}`}>
+            <Wallet size={16} /> Fundo de Caixa
+          </button>
+
         </div>
 
         <div className="flex gap-2">
@@ -306,7 +385,195 @@ export default function Home() {
               <pre>{logs}</pre>
             </div>
           )}
+
+          {/* ===== TELA: MANUTENÇÕES ===== */}
+          {activeTab === 'manutencoes' && (
+            <div className="flex-1 overflow-y-auto p-6 bg-[#0f111a]">
+              <h2 className="text-2xl font-black text-white mb-1 flex items-center gap-2"><Wrench className="text-amber-400" size={24} /> Manutenções</h2>
+              <p className="text-slate-500 text-sm mb-6">Gerencie as ordens de manutenção ativas e concluídas.</p>
+
+              {/* Formulário de nova manutenção */}
+              <div className="bg-[#141824] border border-[#1e2335] rounded-xl p-4 mb-6">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><PlusCircle size={14} /> Nova Manutenção</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Título da manutenção"
+                    value={novaManutencao.titulo}
+                    onChange={e => setNovaManutencao(p => ({ ...p, titulo: e.target.value }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                  />
+                  <input
+                    type="date"
+                    value={novaManutencao.data}
+                    onChange={e => setNovaManutencao(p => ({ ...p, data: e.target.value }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Responsável"
+                    value={novaManutencao.responsavel}
+                    onChange={e => setNovaManutencao(p => ({ ...p, responsavel: e.target.value }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+                <button
+                  onClick={handleAdicionarManutencao}
+                  className="mt-3 px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold rounded-lg transition-all">
+                  + Adicionar
+                </button>
+              </div>
+
+              {/* Cards de manutenção */}
+              <div className="grid grid-cols-1 gap-4">
+                {manutencoes.map(m => {
+                  const statusInfo: Record<ManutencaoCard['status'], { label: string; color: string; bg: string }> = {
+                    pendente: { label: 'Pendente', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30' },
+                    em_andamento: { label: 'Em Andamento', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30' },
+                    concluido: { label: 'Concluído', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30' },
+                  };
+                  const info = statusInfo[m.status];
+                  return (
+                    <div key={m.id} className="bg-[#141824] border border-[#1e2335] rounded-xl p-5 flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="font-bold text-white text-base">{m.titulo}</p>
+                        <p className="text-xs text-slate-500 mt-1">📅 {m.data} &nbsp;·&nbsp; 👤 {m.responsavel}</p>
+                      </div>
+                      <button
+                        onClick={() => handleAlterarStatusManutencao(m.id)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold border ${info.bg} ${info.color} transition-all hover:opacity-80`}>
+                        {info.label}
+                      </button>
+                      <button
+                        onClick={() => handleRemoverManutencao(m.id)}
+                        className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+                {manutencoes.length === 0 && (
+                  <div className="text-center py-12 text-slate-600">
+                    <Wrench size={40} className="mx-auto mb-3 opacity-30" />
+                    <p>Nenhuma manutenção cadastrada.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ===== TELA: FUNDO DE CAIXA ===== */}
+          {activeTab === 'fundo_caixa' && (
+            <div className="flex-1 overflow-y-auto p-6 bg-[#0f111a]">
+              <h2 className="text-2xl font-black text-white mb-1 flex items-center gap-2"><Wallet className="text-emerald-400" size={24} /> Fundo de Caixa</h2>
+              <p className="text-slate-500 text-sm mb-6">Controle de entradas e saídas do fundo de caixa.</p>
+
+              {/* Cards de saldo */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-[#141824] border border-emerald-500/30 rounded-xl p-4">
+                  <p className="text-xs text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-1"><TrendingUp size={12} className="text-emerald-400" /> Total Entradas</p>
+                  <p className="text-2xl font-black text-emerald-400">R$ {totalEntradas.toFixed(2)}</p>
+                </div>
+                <div className="bg-[#141824] border border-red-500/30 rounded-xl p-4">
+                  <p className="text-xs text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-1"><TrendingDown size={12} className="text-red-400" /> Total Saídas</p>
+                  <p className="text-2xl font-black text-red-400">R$ {totalSaidas.toFixed(2)}</p>
+                </div>
+                <div className={`bg-[#141824] border rounded-xl p-4 ${saldoAtual >= 0 ? 'border-cyan-500/30' : 'border-red-500/30'}`}>
+                  <p className="text-xs text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-1"><Wallet size={12} className={saldoAtual >= 0 ? 'text-cyan-400' : 'text-red-400'} /> Saldo Atual</p>
+                  <p className={`text-2xl font-black ${saldoAtual >= 0 ? 'text-cyan-400' : 'text-red-400'}`}>R$ {saldoAtual.toFixed(2)}</p>
+                </div>
+              </div>
+
+              {/* Formulário de nova movimentação */}
+              <div className="bg-[#141824] border border-[#1e2335] rounded-xl p-4 mb-6">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><PlusCircle size={14} /> Nova Movimentação</h3>
+                <div className="grid grid-cols-4 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Descrição"
+                    value={novaMovimentacao.descricao}
+                    onChange={e => setNovaMovimentacao(p => ({ ...p, descricao: e.target.value }))}
+                    className="col-span-2 bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <select
+                    value={novaMovimentacao.tipo}
+                    onChange={e => setNovaMovimentacao(p => ({ ...p, tipo: e.target.value as 'entrada' | 'saida' }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <option value="entrada">Entrada</option>
+                    <option value="saida">Saída</option>
+                  </select>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="Valor (R$)"
+                    value={novaMovimentacao.valor}
+                    onChange={e => setNovaMovimentacao(p => ({ ...p, valor: e.target.value }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                  <input
+                    type="date"
+                    value={novaMovimentacao.data}
+                    onChange={e => setNovaMovimentacao(p => ({ ...p, data: e.target.value }))}
+                    className="bg-[#0f111a] border border-[#1e2335] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <button
+                  onClick={handleAdicionarMovimentacao}
+                  className="mt-3 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-all">
+                  + Adicionar
+                </button>
+              </div>
+
+              {/* Tabela de movimentações */}
+              <div className="bg-[#141824] border border-[#1e2335] rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[#1e2335]">
+                      <th className="text-left px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Data</th>
+                      <th className="text-left px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Descrição</th>
+                      <th className="text-left px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Tipo</th>
+                      <th className="text-right px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-widest">Valor</th>
+                      <th className="px-4 py-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {movimentacoes.map(mov => (
+                      <tr key={mov.id} className="border-b border-[#1e2335] hover:bg-[#1e2335]/40 transition-colors">
+                        <td className="px-4 py-3 text-slate-400">{mov.data}</td>
+                        <td className="px-4 py-3 text-white">{mov.descricao}</td>
+                        <td className="px-4 py-3">
+                          <span className={`flex items-center gap-1 font-medium ${mov.tipo === 'entrada' ? 'text-emerald-400' : 'text-red-400'}`}>
+                            {mov.tipo === 'entrada' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                            {mov.tipo === 'entrada' ? 'Entrada' : 'Saída'}
+                          </span>
+                        </td>
+                        <td className={`px-4 py-3 text-right font-bold ${mov.tipo === 'entrada' ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {mov.tipo === 'entrada' ? '+' : '-'} R$ {mov.valor.toFixed(2)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            onClick={() => handleRemoverMovimentacao(mov.id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all">
+                            <Trash2 size={12} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {movimentacoes.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-12 text-center text-slate-600">
+                          <Wallet size={40} className="mx-auto mb-3 opacity-30" />
+                          <p>Nenhuma movimentação cadastrada.</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </main>
+
 
         {/* RIGHT SIDEBAR - VALIDATION */}
         <aside className="w-80 border-l border-[#1e2335] bg-[#141824] flex flex-col">
