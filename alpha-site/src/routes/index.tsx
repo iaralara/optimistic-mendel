@@ -31,7 +31,27 @@ const benefits = [
   [Zap, "Agilidade administrativa"], [Cpu, "Tecnologia exclusiva"],
 ] as const;
 
-const operationalServices = [
+const services = [
+  {
+    icon: ShieldCheck,
+    title: "Síndico Profissional",
+    items: [
+      "Liderança, presença e estratégia para uma gestão condominial de excelência.",
+      "Atuação profissional voltada para a preservação do patrimônio e qualidade de vida.",
+      "Acompanhamento de necessidades, fiscalização e condução de fornecedores.",
+      "Prevenção ativa de problemas e planejamento contínuo de melhorias.",
+    ],
+  },
+  {
+    icon: KeyRound,
+    title: "Implantação Condominial",
+    items: [
+      "Planejamento e estruturação para uma operação condominial eficiente.",
+      "Preparação estratégica e estruturação para entrada em operação.",
+      "Organização de processos, rotinas e contratação de fornecedores essenciais.",
+      "Acompanhamento da implantação das áreas comuns e sistemas necessários.",
+    ],
+  },
   {
     icon: Wrench,
     title: "Gestão Operacional",
@@ -261,106 +281,16 @@ function Index() {
         <div className="max-w-3xl">
           <p className="eyebrow text-slate font-semibold uppercase tracking-wider">Nossos Serviços</p>
           <h2 className="mt-3 text-3xl font-display font-bold text-navy md:text-4xl">
-            Soluções Completas em Gestão Condominial e Patrimonial
+            Soluções Completas em Gestão Condominial
           </h2>
           <p className="mt-4 text-base text-muted-foreground leading-relaxed">
             Do planejamento inicial à liderança executiva, combinamos presença ativa, conformidade técnica e inteligência de processos para valorizar seu condomínio.
           </p>
         </div>
 
-        {/* CARDS DE DESTAQUE: SÍNDICO PROFISSIONAL & IMPLANTAÇÃO */}
-        <div className="mt-14 grid gap-8 lg:grid-cols-2">
-          {/* SÍNDICO PROFISSIONAL */}
-          <article className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-navy p-8 md:p-10 text-ivory shadow-xl border border-slate/30">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-slate/20 px-3.5 py-1 text-xs font-semibold text-slate border border-slate/30">
-                <ShieldCheck className="h-4 w-4" />
-                <span>Liderança de Excelência</span>
-              </div>
-              <h3 className="mt-6 text-2xl md:text-3xl font-display font-bold text-ivory">
-                Síndico Profissional
-              </h3>
-              <p className="mt-3 text-base font-medium text-slate">
-                Liderança, presença e estratégia para uma gestão condominial de excelência.
-              </p>
-              <div className="mt-6 space-y-3.5 text-sm text-mist/95 leading-relaxed">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-slate shrink-0 mt-0.5" />
-                  <span>Uma atuação profissional voltada para a preservação do patrimônio, eficiência operacional e qualidade de vida dos moradores.</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-slate shrink-0 mt-0.5" />
-                  <span>Acompanhamos de perto as necessidades do condomínio, fiscalizamos serviços, conduzimos fornecedores, prevenimos problemas e planejamos melhorias.</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-slate shrink-0 mt-0.5" />
-                  <span>Transformamos a gestão em uma atuação mais organizada, responsável, transparente e estratégica.</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-ivory/10 flex items-center justify-between">
-              <a
-                href={WHATS}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-slate transition hover:text-ivory"
-              >
-                <span>Solicitar proposta para Síndico Profissional</span>
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </article>
-
-          {/* IMPLANTAÇÃO CONDOMINIAL */}
-          <article className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-card p-8 md:p-10 shadow-elegant border border-border">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-navy/5 px-3.5 py-1 text-xs font-semibold text-navy border border-navy/10">
-                <KeyRound className="h-4 w-4 text-navy" />
-                <span>Novos Empreendimentos</span>
-              </div>
-              <h3 className="mt-6 text-2xl md:text-3xl font-display font-bold text-navy">
-                Implantação Condominial
-              </h3>
-              <p className="mt-3 text-base font-semibold text-navy/85">
-                Planejamento e estruturação para uma operação condominial eficiente.
-              </p>
-              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                Um trabalho estratégico de preparação e estruturação do condomínio para sua entrada em operação. Organizamos processos, rotinas, fornecedores e serviços essenciais, apoiamos a estruturação administrativa e operacional e acompanhamos a implantação das áreas e sistemas necessários para que o condomínio inicie sua jornada com organização, eficiência e planejamento.
-              </p>
-              <div className="mt-6 space-y-2.5 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-navy shrink-0" />
-                  <span>Assembleia Geral de Instalação (AGI) estruturada</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-navy shrink-0" />
-                  <span>Vistoria e recebimento técnico de áreas comuns da construtora</span>
-                </div>
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="h-4 w-4 text-navy shrink-0" />
-                  <span>Contratação de prestadores essenciais, seguros e segurança</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-              <a
-                href={WHATS}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-navy transition hover:text-slate-700"
-              >
-                <span>Falar sobre Implantação de Condomínio</span>
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </article>
-        </div>
-
-        {/* GRADE DE 4 PILARES ESSENCIAIS */}
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {operationalServices.map((service) => {
+        {/* GRADE UNIFORME DE SERVIÇOS (TODOS PEQUENOS E PADRONIZADOS) */}
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((service) => {
             const Icon = service.icon;
             return (
               <article
@@ -386,24 +316,14 @@ function Index() {
           })}
         </div>
 
-        {/* SERVIÇOS COMPLEMENTARES: FINANCEIRO E IMOBILIÁRIO */}
-        <div className="mt-8 rounded-2xl bg-mist/40 border border-border p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="max-w-2xl">
-            <h4 className="text-lg font-display font-bold text-navy flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-navy" />
-              Gestão Financeira, Administrativa & Mercado Imobiliário
-            </h4>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Além da rotina operacional, oferecemos conciliação contábil, controle de inadimplência, prestação de contas digital e assessoria completa para compra, venda, locação e avaliação patrimonial de imóveis.
-            </p>
-          </div>
+        <div className="mt-14 text-center">
           <a
             href={WHATS}
             target="_blank"
             rel="noreferrer"
-            className="shrink-0 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-ivory shadow-md transition hover:bg-slate hover:text-navy hover:scale-105"
+            className="inline-flex items-center gap-2 rounded-full bg-navy px-8 py-3.5 text-sm font-semibold text-ivory shadow-lg transition hover:bg-slate hover:text-navy hover:scale-105"
           >
-            <span>Falar com Especialistas</span>
+            <span>Solicitar Proposta para meu Condomínio</span>
             <ArrowRight className="h-4 w-4" />
           </a>
         </div>
