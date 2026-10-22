@@ -264,12 +264,13 @@ function Index() {
 
           <div className="mt-12 text-center">
             <a
-              href="https://app.alphaadmsc.com.br"
+              href={WHATS}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-slate px-8 py-3.5 text-sm font-semibold text-navy shadow-lg transition hover:bg-ivory hover:scale-105"
+              className="inline-flex items-center gap-2.5 rounded-full bg-slate px-8 py-3.5 text-sm font-semibold text-navy shadow-lg transition hover:bg-ivory hover:scale-105"
             >
-              <span>Acessar Portal do Morador / Síndico (app.alphaadmsc.com.br)</span>
+              <MessageCircle className="h-4 w-4" />
+              <span>Falar com Nossa Equipe no WhatsApp</span>
               <ArrowRight className="h-4 w-4" />
             </a>
           </div>
