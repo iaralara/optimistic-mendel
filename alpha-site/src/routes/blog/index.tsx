@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getBlogPosts } from "@/integrations/firebase/client";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type PostListItem = {
@@ -56,26 +56,16 @@ const postsQuery = queryOptions({
   queryKey: ["blog-posts"],
   queryFn: async (): Promise<PostListItem[]> => {
     try {
-      const timeoutPromise = new Promise<{ data: null; error: Error }>((_, reject) =>
-        setTimeout(() => reject(new Error("Supabase timeout")), 4000)
-      );
-      const fetchPromise = supabase
-        .from("blog_posts")
-        .select("id, title, slug, excerpt, topic, published_at, image_url")
-        .eq("status", "published")
-        .order("published_at", { ascending: false });
-
-      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
-      const supabasePosts: PostListItem[] = (!error && data) ? data : [];
+      const firebasePosts = await getBlogPosts();
       const mergedMap = new Map<string, PostListItem>();
 
-      // Carrega os artigos base (incluindo artigos até dia 16)
+      // Carrega os artigos base (incluindo artigos originais de segurança)
       for (const p of fallbackPosts) {
         mergedMap.set(p.slug, p);
       }
 
-      // Mescla com os artigos do Supabase (adicionando os novos ou atualizados)
-      for (const p of supabasePosts) {
+      // Mescla com os artigos do Firebase (adicionando os novos gerados)
+      for (const p of firebasePosts) {
         mergedMap.set(p.slug, {
           ...mergedMap.get(p.slug),
           ...p,
@@ -86,7 +76,7 @@ const postsQuery = queryOptions({
       allPosts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
       return allPosts;
     } catch (err) {
-      console.warn("[Blog] Falha de conexão com Supabase. Carregando modo offline/fallback.", err);
+      console.warn("[Blog] Falha ao consultar Firebase. Carregando modo fallback.", err);
       return fallbackPosts;
     }
   },

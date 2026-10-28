@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getBlogPostBySlug } from "@/integrations/firebase/client";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -121,21 +121,9 @@ const postQuery = (slug: string) =>
     queryKey: ["blog-post", slug],
     queryFn: async (): Promise<Post | null> => {
       try {
-        const timeoutPromise = new Promise<{ data: null; error: Error }>((_, reject) =>
-          setTimeout(() => reject(new Error("Supabase timeout")), 4000)
-        );
-        const fetchPromise = supabase
-          .from("blog_posts")
-          .select("id, title, slug, excerpt, content, meta_description, published_at, image_url")
-          .eq("slug", slug)
-          .eq("status", "published")
-          .maybeSingle();
-
-        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
-        if (error) {
-          return fallbackPostsMap[slug] ?? null;
-        }
-        return data ?? fallbackPostsMap[slug] ?? null;
+        const firebasePost = await getBlogPostBySlug(slug);
+        if (firebasePost) return firebasePost;
+        return fallbackPostsMap[slug] ?? null;
       } catch (err) {
         return fallbackPostsMap[slug] ?? null;
       }
